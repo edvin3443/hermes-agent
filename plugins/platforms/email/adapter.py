@@ -215,7 +215,16 @@ def _send_imap_id(imap: "imaplib.IMAP4") -> None:
 
 
 def _is_automated_sender(address: str, headers: dict) -> bool:
-    """Return True if this email is from an automated/noreply source."""
+    """Return True if this email is from/for an automated/noreply source.
+
+    This detects automated senders so the adapter never replies by email to
+    them (replying to e.g. GitHub's notifications@ address posts a comment via
+    email and creates an echo loop). Inbound messages from automated senders
+    are still dispatched and acted on — detection is used ONLY to suppress the
+    outbound email reply, never to drop inbound processing.
+    """
+    if not address:
+        return False
     addr = address.lower()
     if any(pattern in addr for pattern in _NOREPLY_PATTERNS):
         return True
@@ -949,11 +958,11 @@ class EmailAdapter(BasePlatformAdapter):
         subject = _decode_header_value(msg.get("Subject", "(no subject)"))
         message_id = msg.get("Message-ID", "")
         in_reply_to = msg.get("In-Reply-To", "")
-        # Skip automated/noreply senders before any processing
+        # Inbound automated/GitHub emails are NOT dropped here — they are
+        # dispatched so the agent can act on them (accept invites, do issues,
+        # handle PR comments). Outbound email replies to them are suppressed in
+        # send() to avoid echo loops.
         msg_headers = dict(msg.items())
-        if _is_automated_sender(sender_addr, msg_headers):
-            logger.debug("[Email] Skipping automated sender: %s", sender_addr)
-            return None
 
         # Verify the From: domain is authenticated (SPF/DKIM/DMARC)
         # while the raw message — and its trusted
@@ -1020,10 +1029,9 @@ class EmailAdapter(BasePlatformAdapter):
         if sender_addr == self._address.lower():
             return
 
-        # Never reply to automated senders
-        if _is_automated_sender(sender_addr, {}):
-            logger.debug("[Email] Dropping automated sender at dispatch: %s", sender_addr)
-            return
+        # Automated/GitHub senders are NOT dropped here — the message is
+        # dispatched so the agent can act on it. Outbound email replies to
+        # automated senders are suppressed in send() to avoid echo loops.
 
         # Skip senders not in EMAIL_ALLOWED_USERS — prevents the adapter
         # from creating a MessageEvent (and thus thread context) for senders
@@ -1135,6 +1143,14 @@ class EmailAdapter(BasePlatformAdapter):
         metadata: Optional[Dict[str, Any]] = None,
     ) -> SendResult:
         """Send an email reply to the given address."""
+        # Never reply by email to automated senders (GitHub notifications,
+        # noreply@, etc.). Replying to GitHub's notifications@ address posts a
+        # comment via email and creates an echo loop. Inbound messages from
+        # these senders are still dispatched and acted on — only the outbound
+        # email reply is suppressed here.
+        if _is_automated_sender(chat_id, {}):
+            logger.info("[Email] Suppressed reply to automated sender: %s", chat_id)
+            return SendResult(success=True, message_id=None)
         try:
             loop = asyncio.get_running_loop()
             message_id = await loop.run_in_executor(
