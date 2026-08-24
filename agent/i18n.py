@@ -26,7 +26,7 @@ Language resolution order:
     4. ``"en"`` (baseline)
 
 Supported languages: en, zh, zh-hant, ja, de, es, fr, tr, uk, af, ko, it, ga,
-pt, ru, hu, ar.  Unknown values fall back to en.
+pt, ru, hu, ar, no.  Unknown values fall back to en.
 """
 
 from __future__ import annotations
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_LANGUAGES: tuple[str, ...] = (
     "en", "zh", "zh-hant", "ja", "de", "es", "fr", "tr", "uk",
-    "af", "ko", "it", "ga", "pt", "ru", "hu", "ar",
+    "af", "ko", "it", "ga", "pt", "ru", "hu", "ar", "no",
 )
 DEFAULT_LANGUAGE = "en"
 
@@ -82,6 +82,10 @@ _LANGUAGE_ALIASES: dict[str, str] = {
     # Arabic — bare "arabic"/endonym plus the common regional BCP-47 tags.
     "arabic": "ar", "العربية": "ar",
     "ar-sa": "ar", "ar-eg": "ar", "ar-ae": "ar", "ar-ma": "ar", "ar-dz": "ar",
+    # Norwegian (Bokmål) — no is the ISO 639-1 macro-language code covering
+    # Bokmål; nb (Bokmål) and the endonym map to the same catalog.
+    "norwegian": "no", "norsk": "no", "bokmål": "no", "bokmal": "no",
+    "no-no": "no", "nb": "no", "nb-no": "no",
 }
 
 _catalog_cache: dict[str, dict[str, str]] = {}

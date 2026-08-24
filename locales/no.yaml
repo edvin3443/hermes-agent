@@ -1,0 +1,460 @@
+# Hermes statisk-meldingskatalog -- Norsk (bokmål)
+# See locales/en.yaml for the source of truth; keep keys in sync.
+#
+# Bare brukervendte statiske meldinger fra CLI-godkjenningsspørsmålet og en
+# håndfull gateway-slash-kommandosvar bor her. Agentgenerert utdata, logglinjer,
+# feiltracebacks, verktøyutdata og slash-kommandoers beskrivelser forblir på
+# engelsk og oversettes IKKE -- se agent/i18n.py for begrunnelsen.
+#
+# Nøkler er punktbaner; innrykket nedenfor er kun for lesbarhet. Verdier kan
+# inneholde {placeholder}-symboler for str.format-substitusjon. Ved nye nøkler,
+# legg dem til i ALLE språkfiler i samme commit -- tests/agent/test_i18n.py
+# krever katalogparitet. Godkjenningsinndata (o/s/a/D) er hardkodet i den
+# engelske tolkeren og beholdes uendret nedenfor.
+
+approval:
+  # CLI-godkjenningsspørsmål -- vises når en farlig kommando krever brukergodkjenning.
+  dangerous_header: "⚠️  FARLIG KOMMANDO: {description}"
+  choose_long:     "      [o]en gang  |  [s]esjon  |  [a]lltid  |  [d]nekt"
+  choose_short:    "      [o]en gang  |  [s]esjon  |  [d]nekt"
+  prompt_long:     "      Valg [o/s/a/D]: "
+  prompt_short:    "      Valg [o/s/D]: "
+  choose_smart_deny: "      [o]en gang  |  [d]nekt"
+  prompt_smart_deny: "      Valg [o/D]: "
+  # Godkjente inndata forbli på engelsk fordi kommandotolkeren hardkoder dem.
+  smart_deny_once_inputs: "o,once"
+  smart_deny_deny_inputs: "d,deny"
+  timeout:         "      ⏱ Tidsavbrudd — nekter kommando"
+  allowed_once:    "      ✓ Tillatt én gang"
+  allowed_session: "      ✓ Tillatt for denne sesjonen"
+  allowed_always:  "      ✓ Lagt til i permanent tillatelsesliste"
+  denied:          "      ✗ Nektet"
+  cancelled:       "      ✗ Avbrutt"
+  blocklist_message: "Denne kommandoen står på den ubetingede blokkeringslisten og kan ikke godkjennes."
+
+gateway:
+  # Meldingsplattform-svar på slash-kommandoer og implisitte tilstandsendringer.
+  approval_expired: "⚠️ Godkjenning utløpt (agenten venter ikke lenger). Be agenten prøve igjen."
+  draining:         "⏳ Tømmer {count} aktiv(e) agent(er) før omstart..."
+  goal_cleared:     "✓ Mål fjernet."
+  no_active_goal:   "Ingen aktivt mål."
+  config_read_failed: "⚠️ Kunne ikke lese config.yaml: {error}"
+  config_save_failed: "⚠️ Kunne ikke lagre konfigurasjonen: {error}"
+
+  # /model-utdata -- vises etter modellbytte eller ved listing av modeller.
+  # Leverandørnavn, modell-IDs, egenskapsstrenger og kostnadstall oversettes
+  # IKKE -- de er identifikatorer/verdier, ikke prosa. Kun etikettene
+  # ("Leverandør:", "Kontekst:", osv.) og hjelpe-/bunntekstlinjene er
+  # oversatt. Leverandør-/modellnavn og kodespråk forbli på engelsk.
+  model:
+    error_prefix:           "Feil: {error}"
+    switched:               "Modell byttet til `{model}`"
+    provider_label:         "Leverandør: {provider}"
+    context_label:          "Kontekst: {tokens} tokens"
+    max_output_label:       "Maks utdata: {tokens} tokens"
+    cost_label:             "Kostnad: {cost}"
+    capabilities_label:     "Egenskaper: {capabilities}"
+    prompt_caching_enabled: "Prompt-hurtigbuffer: aktivert"
+    warning_prefix:         "Advarsel: {warning}"
+    saved_global:           "Lagret i config.yaml (`--global`)"
+    session_only_hint:      "_(kun sesjon — legg til `--global` for å lagre)_"
+    current_label:          "Nåværende: `{model}` på {provider}"
+    current_tag:            " (nåværende)"
+    more_models_suffix:     " (+{count} flere)"
+    usage_switch_model:     "`/model <navn>` — bytt modell"
+    usage_switch_provider:  "`/model <navn> --provider <slug>` — bytt leverandør"
+    usage_persist:          "`/model <navn> --global` — lagre"
+
+  agents:
+    header:                "🤖 **Aktive agenter og oppgaver**"
+    active_agents:         "**Aktive agenter:** {count}"
+    this_chat:             " · denne chatten"
+    more:                  "... og {count} flere"
+    running_processes:     "**Kjørende bakgrunnsprosesser:** {count}"
+    async_jobs:            "**Gateway-asynkrone jobber:** {count}"
+    background_delegations: "**Bakgrunnsdelegasjoner:** {count}"
+    none:                  "Ingen aktive agenter eller kjørende oppgaver."
+    state_starting:        "starter"
+    state_running:         "kjører"
+
+  approve:
+    no_pending:            "Ingen ventende kommando å godkjenne."
+    once_singular:         "✅ Kommando godkjent. Agenten fortsetter..."
+    once_plural:           "✅ Kommandoer godkjent ({count} kommandoer). Agenten fortsetter..."
+    session_singular:      "✅ Kommando godkjent (mønster godkjent for denne sesjonen). Agenten fortsetter..."
+    session_plural:        "✅ Kommandoer godkjent (mønster godkjent for denne sesjonen) ({count} kommandoer). Agenten fortsetter..."
+    always_singular:       "✅ Kommando godkjent (mønster godkjent permanent). Agenten fortsetter..."
+    always_plural:         "✅ Kommandoer godkjent (mønster godkjent permanent) ({count} kommandoer). Agenten fortsetter..."
+
+  background:
+    usage:                 "Bruk: /background <spørsmål>\nEksempel: /background Oppsummer topp-HN-sakene i dag\n\nKjører oppgaven i en egen sesjon. Du kan fortsette å chatte — resultatet dukker opp her når det er ferdig."
+    started:               "🔄 Bakgrunnsoppgave startet: \"{preview}\"\nOppgave-ID: {task_id}\nDu kan fortsette å chatte — resultatene dukker opp når de er klare."
+
+  branch:
+    db_unavailable:        "Sesjonsdatabasen er ikke tilgjengelig."
+    no_conversation:       "Ingen samtale å forgreine fra — send en melding først."
+    create_failed:         "Kunne ikke opprette gren: {error}"
+    switch_failed:         "Gren opprettet, men klarte ikke å bytte til den."
+    branched_one:          "⑂ Forgreinet til **{title}** ({count} melding kopiert)\nOriginal: `{parent}`\nGren: `{new}`\nBruk `/resume` for å bytte tilbake til originalen."
+    branched_many:         "⑂ Forgreinet til **{title}** ({count} meldinger kopiert)\nOriginal: `{parent}`\nGren: `{new}`\nBruk `/resume` for å bytte tilbake til originalen."
+
+  commands:
+    usage:                 "Bruk: `/commands [side]`"
+    skill_header:          "⚡ **Ferdighetskommandoer**:"
+    default_desc:          "Ferdighetskommando"
+    none:                  "Ingen kommandoer tilgjengelige."
+    header:                "📚 **Kommandoer** ({total} totalt, side {page}/{total_pages})"
+    nav_prev:              "`/commands {page}` ← forrige"
+    nav_next:              "neste → `/commands {page}`"
+    out_of_range:          "_(Forespurt side {requested} var utenfor rekkevidde, viser side {page}.)_"
+
+  compress:
+    not_enough:            "Ikke nok samtale å komprimere (trenger minst 4 meldinger)."
+    no_provider:           "Ingen leverandør konfigurert — kan ikke komprimere."
+    nothing_to_do:         "Ingenting å komprimere ennå (transkriptet er fortsatt alt beskyttet kontekst)."
+    aggressive_unsupported: "--aggressive støttes ikke; bruk '/compress here [N]' for å beholde bare de siste utvekslingene, eller /undo for å kaste trinn."
+    focus_line:            "Fokus: \"{topic}\""
+    summary_failed:        "⚠️ Sammendragsgenerering mislyktes ({error}). {count} historiske melding(er) ble fjernet og erstattet med en plassholder; tidligere kontekst kan ikke hentes tilbake. Vurder å sjekke auxiliary.compression-modellkonfigurasjonen."
+    aborted:               "⚠️ Komprimering avbrutt ({error}). Ingen meldinger ble forkastet — samtalen er uendret. Kjør /compress for å prøve igjen, /reset for en ren sesjon, eller sjekk auxiliary.compression-modellkonfigurasjonen."
+    aux_failed:            "ℹ️ Konfigurert kompresjonsmodell `{model}` mislyktes ({error}). Gjenopprettet med hovedmodellen din — konteksten er intakt — men du bør kanskje sjekke `auxiliary.compression.model` i config.yaml."
+    failed:                "Komprimering mislyktes: {error}"
+
+  debug:
+    upload_failed:         "✗ Kunne ikke laste opp feilsøkingsrapport: {error}"
+    header:                "**Feilsøkingsrapport lastet opp:**"
+    auto_delete:           "⏱ Limer slettes automatisk om 6 timer."
+    full_logs_hint:        "For fulle loggopplastinger, bruk `hermes debug share` fra CLI."
+    share_hint:            "Del disse lenkene med Hermes-teamet for støtte."
+
+  deny:
+    stale:                 "❌ Kommando nektet (godkjenningen var utdatert)."
+    no_pending:            "Ingen ventende kommando å nekte."
+    denied_singular:       "❌ Kommando nektet."
+    denied_plural:         "❌ Kommandoer nektet ({count} kommandoer)."
+    denied_reason_singular: "❌ Kommando nektet. Årsak videresendt til agenten: \"{reason}\""
+    denied_reason_plural:  "❌ Kommandoer nektet ({count} kommandoer). Årsak videresendt til agenten: \"{reason}\""
+
+  fast:
+    not_supported:         "⚡ /fast er kun tilgjengelig for OpenAI-modeller som støtter prioritert behandling (Priority Processing)."
+    status:                "⚡ Prioritert behandling\n\nNåværende modus: `{mode}`\n\n_Bruk:_ `/fast <normal|fast|status>`"
+    unknown_arg:           "⚠️ Ukjent argument: `{arg}`\n\n**Gyldige valg:** normal, fast, status"
+    saved:                 "⚡ ✓ Prioritert behandling: **{label}** (lagret i konfigurasjonen)\n_(trer i kraft ved neste melding)_"
+    session_only:          "⚡ ✓ Prioritert behandling: **{label}** (kun denne sesjonen)"
+    label_fast:            "FAST"
+    label_normal:          "NORMAL"
+    status_fast:           "fast"
+    status_normal:         "normal"
+    picker_title:          "⚡ **Prioritert behandling**\n\nNåværende modus: `{mode}`\n\nVelg et alternativ:"
+    choice_fast:           "fast — prioritert behandling på"
+    choice_normal:         "normal — standard behandling"
+
+  footer:
+    status:                "📎 Kjøretidsfotlinje: **{state}**\nFelter: `{fields}`\nPlattform: `{platform}`"
+    usage:                 "Bruk: `/footer [on|off|status]`"
+    saved:                 "📎 Kjøretidsfotlinje: **{state}**{example}\n_(lagret globalt — trer i kraft ved neste melding)_"
+    example_line:          "\nEksempel: `{preview}`"
+    state_on:              "PÅ"
+    state_off:             "AV"
+
+  goal:
+    unavailable:           "Mål er ikke tilgjengelig i denne sesjonen."
+    no_goal_set:           "Ingen mål satt."
+    paused:                "⏸ Mål satt på pause: {goal}"
+    no_resume:             "Ingen mål å gjenoppta."
+    resumed:               "▶ Mål gjenopptatt: {goal}\nFortsetter nå — jeg tar neste steg med en gang."
+    invalid:               "Ugyldig mål: {error}"
+    set:                   "⊙ Mål satt ({budget}-trinns budsjett): {goal}\nJeg jobber videre til målet er ferdig, du setter det på pause / fjerner det, eller budsjettet er oppbrukt.\nKontroller: /goal status · /goal pause · /goal resume · /goal clear"
+
+  help:
+    header:                "📖 **Hermes-kommandoer**\n"
+    skill_header:          "\n⚡ **Ferdighetskommandoer** ({count} aktive):"
+    more_use_commands:     "\n... og {count} flere. Bruk `/commands` for den komplette paginerte listen."
+
+  insights:
+    invalid_days:          "Ugyldig --days-verdi: {value}"
+    error:                 "Feil ved generering av innsikt: {error}"
+
+  kanban:
+    error_prefix:          "⚠ kanban-feil: {error}"
+    subscribed_suffix:     "(abonnert — du varsles når {task_id} fullføres eller blokkeres)"
+    truncated_suffix:      "… (avkortet; bruk `hermes kanban …` i terminalen for full utdata)"
+    no_output:             "(ingen utdata)"
+    wake:
+      completed:           "fullført"
+      gave_up:             "gav opp (forsøk oppbrukt)"
+      crashed:             "krasjet (arbeider avsluttet); dispatcheren prøver igjen"
+      timed_out:           "tidsavbrudd; dispatcheren prøver igjen"
+      blocked:             "blokkert; krever oppmerksomhet"
+      status_default:      "status endret"
+      status_joiner:       ", "
+      message:             "[kanban] Oppgave {task_id} {status}.\nTittel: {title}\nAnsvarlig: @{assignee}\nTavle: {board}\n\nSjekk resultatet eller bestem neste steg."
+      handoff:             "Resultat: {summary}"
+      guidance:            "Dette er en automatisk statusvarsling, ikke en forespørsel om å dekomponere oppgaven på nytt. Inspiser gjeldende tavle før du oppretter oppfølgingsoppgaver; ikke opprett oppgaver eller grafer som allerede finnes."
+
+  personality:
+    none_configured:       "Ingen personligheter konfigurert i `{path}/config.yaml`"
+    header:                "🎭 **Tilgjengelige personligheter**\n"
+    none_option:           "• `none` — (ingen personlighetsoverlegg)"
+    item:                  "• `{name}` — {preview}"
+    usage:                 "\nBruk: `/personality <navn>`"
+    save_failed:           "⚠️ Kunne ikke lagre personlighetsendringen: {error}"
+    cleared:               "🎭 Personlighet fjernet — bruker standard agentatferd.\n_(trer i kraft ved neste melding)_"
+    set_to:                "🎭 Personlighet satt til **{name}**\n_(trer i kraft ved neste melding)_"
+    unknown:               "Ukjent personlighet: `{name}`\n\nTilgjengelig: {available}"
+
+  profile:
+    header:                "👤 **Profil:** `{profile}`"
+    home:                  "📂 **Hjem:** `{home}`"
+
+  reasoning:
+    level_default:             "medium (standard)"
+    level_disabled:            "none (deaktivert)"
+    scope_session:             "sesjonsoverstyring"
+    scope_global:              "global konfigurasjon"
+    status:                    "🧠 **Slutningsinnstillinger**\n\n**Innsats:** `{level}`\n**Omfang:** {scope}\n**Visning:** {display}\n\n_Bruk:_ `/reasoning <none|minimal|low|medium|high|xhigh|max|ultra|reset|show|hide> [--global]`"
+    display_on:                "på ✓"
+    display_off:               "av"
+    display_set_on:            "🧠 ✓ Slutningsvisning: **PÅ**\nModellens tankegang vises før hvert svar på **{platform}**."
+    display_set_off:           "🧠 ✓ Slutningsvisning: **AV** for **{platform}**"
+    reset_global_unsupported:  "⚠️ `/reasoning reset --global` støttes ikke. Bruk `/reasoning <nivå> --global` for å endre den globale standarden."
+    reset_done:                "🧠 ✓ Sesjonens slutningsoverstyring fjernet; faller tilbake til global konfigurasjon."
+    unknown_arg:               "⚠️ Ukjent argument: `{arg}`\n\n**Gyldige nivåer:** none, minimal, low, medium, high, xhigh, max, ultra\n**Visning:** show, hide\n**Lagre:** legg til `--global` for å lagre utover denne sesjonen"
+    picker_title:              "🧠 **Slutningsinnstillinger**\n\n**Innsats:** `{level}`\n**Omfang:** {scope}\n**Visning:** {display}\n\nVelg et alternativ:"
+    choice_none:               "none — deaktiver slutning"
+    choice_reset:              "reset — fjern sesjonsoverstyring"
+    choice_show:               "vis slutning i svar"
+    choice_hide:               "skjul slutning fra svar"
+    set_global:                "🧠 ✓ Slutningsinnsats satt til `{effort}` (lagret i konfigurasjonen)\n_(trer i kraft ved neste melding)_"
+    set_global_save_failed:    "🧠 ✓ Slutningsinnsats satt til `{effort}` (kun sesjon — mislyktes å lagre konfigurasjonen)\n_(trer i kraft ved neste melding)_"
+    set_session:               "🧠 ✓ Slutningsinnsats satt til `{effort}` (kun sesjon — legg til `--global` for å lagre)\n_(trer i kraft ved neste melding)_"
+
+  reload_mcp:
+    cancelled:             "🟡 /reload-mcp avbrutt. MCP-verktøy uendret."
+    always_followup:       "ℹ️ Fremtidige `/reload-mcp`-kall kjøres uten bekreftelse. Slå på igjen via `approvals.mcp_reload_confirm: true` i config.yaml."
+    confirm_prompt:        "⚠️ **Bekreft /reload-mcp**\n\nÅ laste inn MCP-serverne på nytt bygger opp verktøysettet for denne sesjonen og **ugyldiggjør leverandørens prompt-hurtigbuffer** — neste melding sender hele inndatatokens på nytt. På langkontekst- eller høy-slutningsmodeller kan dette bli dyrt.\n\nVelg:\n• **Godkjenn én gang** — last inn nå\n• **Godkjenn alltid** — last inn nå og slå av denne meldingen permanent\n• **Avbryt** — la MCP-verktøyene være uendret\n\n_Teksttilbakefall: svar `/approve`, `/always` eller `/cancel`._"
+    header:                "🔄 **MCP-servere lastet inn på nytt**\n"
+    reconnected:           "♻️ Gjenopprettet: {names}"
+    added:                 "➕ Lagt til: {names}"
+    removed:               "➖ Fjernet: {names}"
+    none_connected:        "Ingen MCP-servere tilkoblet."
+    tools_available:       "\n🔧 {tools} verktøy tilgjengelig fra {servers} server(e)"
+    failed:                "❌ MCP-tilkobling på nytt mislyktes: {error}"
+
+  reload_skills:
+    header:                "🔄 **Ferdigheter lastet inn på nytt**\n"
+    no_new:                "Ingen nye ferdigheter oppdaget."
+    total:                 "\n📚 {count} ferdighet(er) tilgjengelig"
+    added_header:          "➕ **Lagte ferdigheter:**"
+    removed_header:        "➖ **Fjernede ferdigheter:**"
+    item_with_desc:        "    - {name}: {desc}"
+    item_no_desc:          "    - {name}"
+    failed:                "❌ Ferdighetstilkobling på nytt mislyktes: {error}"
+
+  reset:
+    header_default:        "✨ Sesjon tilbakestilt! Starter på nytt."
+    header_new:            "✨ Ny sesjon startet!"
+    header_titled:         "✨ Ny sesjon startet: {title}"
+    title_rejected:        "\n⚠️ Tittel avvist: {error}"
+    title_error_untitled:  "\n⚠️ {error} — sesjonen startet uten tittel."
+    title_empty_untitled:  "\n⚠️ Tittelen er tom etter opprydding — sesjonen startet uten tittel."
+    tip:                   "\n✦ Tips: {tip}"
+
+  restart:
+    in_progress:           "⏳ Gateway-omstart allerede i gang..."
+    restarting:            "♻ Starter gatewayen på nytt. Hvis du ikke blir varslet innen 60 sekunder, start fra konsollen med `hermes gateway restart`."
+
+  resume:
+    db_unavailable:        "Sesjonsdatabasen er ikke tilgjengelig."
+    parse_error:           "⚠️ Kunne ikke tolke `/resume`-argumentene: {error}.\nBruk anførselstegn rundt titler med mellomrom, for eksempel: `/resume \"Prosjekt A Plan\"`."
+    matrix_no_named_sessions: "Ingen navngitte sesjoner funnet for dette Matrix-rommet.\nBruk `/title Min Sesjon` for å navngi gjeldende romsesjon, `/resume --all` for å liste alle Matrix-sesjoner, eller `/resume --cross-room <sesjonsnavn>` for å eksplisitt krysse romgrenser."
+    matrix_blocked_no_origin: "⚠️ Matrix /resume blokkert: denne navngitte sesjonen har ingen registrert romopprinnelse, så Hermes vil ikke fortsette den i gjeldende rom som standard. Bruk `/resume --cross-room {name}` hvis du bevisst vil krysse romgrenser."
+    matrix_blocked_other_room: "⚠️ Matrix /resume blokkert: den sesjonen tilhører et annet Matrix-rom ({room}). Bruk `/resume --cross-room {name}` hvis du bevisst vil fortsette den her."
+    matrix_cross_room_success: "⚠️ Rom-kryssende gjenopptak: fortsatte **{title}** i Matrix-rommet **{room}**.\nFremtidige meldinger i dette rommet bruker det transkriptet til `/reset` eller et annet `/resume`.{msg_part}"
+    blocked_not_owner:     "⚠️ /resume blokkert: '**{name}**' tilhører en annen bruker eller chat. Du kan bare gjenoppta sesjoner fra denne chatten."
+    no_named_sessions:     "Ingen navngitte sesjoner funnet.\nBruk `/title Min Sesjon` for å navngi gjeldende sesjon, deretter `/resume Min Sesjon` for å komme tilbake til den senere."
+    list_header:           "📋 **Navngitte sesjoner**\n"
+    list_item:             "• **{title}**{preview_part}"
+    list_item_numbered:    "{index}. **{title}**{preview_part}"
+    list_preview_suffix:   " — _{preview}_"
+    list_footer:           "\nBruk: `/resume <sesjonsnavn>`"
+    list_footer_numbered:  "\nBruk: `/resume <sesjonsnavn>` eller `/resume <nummer>` (f.eks. `/resume 1` for den nyeste)"
+    list_failed:           "Kunne ikke liste sesjoner: {error}"
+    out_of_range:          "Gjenopptaksindeks {index} er utenfor rekkevidde.\nBruk `/resume` uten argumenter for å se tilgjengelige sesjoner."
+    not_found:             "Ingen sesjon funnet som matcher '**{name}**'.\nBruk `/resume` uten argumenter for å se tilgjengelige sesjoner."
+    already_on:            "📌 Allerede på sesjon **{name}**."
+    switch_failed:         "Kunne ikke bytte sesjon."
+    resumed_one:           "↻ Gjenopptok sesjon **{title}** ({count} melding). Samtalen ble gjenopprettet."
+    resumed_many:          "↻ Gjenopptok sesjon **{title}** ({count} meldinger). Samtalen ble gjenopprettet."
+    resumed_no_count:      "↻ Gjenopptok sesjon **{title}**. Samtalen ble gjenopprettet."
+
+  retry:
+    no_previous:           "Ingen tidligere melding å prøve på nytt."
+
+  rollback:
+    not_enabled:           "Sjekkpunkter er ikke aktivert.\nAktiver i config.yaml:\n```\ncheckpoints:\n  enabled: true\n```"
+    none_found:            "Ingen sjekkpunkter funnet for {cwd}"
+    invalid_number:        "Ugyldig sjekkpunktnummer. Bruk 1-{max}."
+    restored:              "✅ Gjenopprettet til sjekkpunkt {hash}: {reason}\nEt øyeblikksbilde før tilbakestilling ble lagret automatisk."
+    kept_user_edits:       "↷ Beholdt dine håndredigeringer: {files}\nBruk /rollback <N> --all for å gjenopprette også dem."
+    restore_failed:        "❌ {error}"
+
+  diff:
+    not_enabled:           "Sjekkpunkter er ikke aktivert, så det er ingen sesjonsbase.\nAktiver i config.yaml:\n```\ncheckpoints:\n  enabled: true\n```\nVanlig /diff fungerer fortsatt — den bruker git direkte."
+    no_changes:            "Ingen endringer."
+    failed:                "{error}"
+
+  set_home:
+    save_failed:           "Kunne ikke lagre hjemkanalen: {error}"
+    success:               "✅ Hjemkanal satt til **{name}** (ID: {chat_id}).\nCron-jobber og meldinger på tvers av plattformer leveres hit."
+
+  context:
+    header:                "🧠 **Kontekstvindu**"
+    model:                 "Modell: `{model}`"
+    window:                "Vindu: {total} tokens"
+    in_use:                "I bruk: {used} / {total} ({pct}%)"
+    bar:                   "{bar}"
+    headroom:              "Klaring til grensen: {headroom} tokens"
+    threshold:             "Auto-komprimeres ved: {threshold} ({threshold_pct}%) — {to_go} igjen"
+    over_threshold:        "⚠️ **Over auto-komprimeringsterskelen ({threshold}, {threshold_pct}%)**"
+    compressions:          "Komprimeringer denne sesjonen: {count}"
+    last_savings:          "Siste komprimering frigjorde: {savings}% av konteksten"
+    totals_header:         "Sum for sesjonen (kumulativt over {calls} API-kall)"
+    totals_line:           "Inndata {input} · utdata {output} · slutning {reasoning}"
+    total_billed:          "Total fakturert: {total}"
+    throughput_note:       "_Gjennomstrømning, ikke kontekststørrelse — hvert kall sender vinduet ovenfor på nytt._"
+    estimated:             "Estimert kontekst: ~{count} tokens over {messages} meldinger"
+    detail_after_first:    "_(Full komprimering og gjennomstrømningsstatistikk tilgjengelig etter første agentsvar)_"
+    no_data:               "Ingen kontekstdata tilgjengelig ennå. Send en melding for å starte en sesjon."
+
+  status:
+    header:                "📊 **Hermes-gateway-status**"
+    matrix_scope_header:   "**Matrix-omfang:**"
+    matrix_scope_room:     "  rom: {room}"
+    matrix_scope_room_id:  "  room_id: {room_id}"
+    matrix_scope_thread:   "  thread_id: {thread_id}"
+    matrix_scope_mode:     "  session_scope: {scope}"
+    matrix_scope_key:      "  session_key: {session_key}"
+    session_id:            "**Sesjons-ID:** `{session_id}`"
+    title:                 "**Tittel:** {title}"
+    created:               "**Opprettet:** {timestamp}"
+    last_activity:         "**Siste aktivitet:** {timestamp}"
+    model:                 "**Modell:** `{model}`"
+    model_provider:        "**Modell:** `{model}` ({provider})"
+    context:               "**Kontekst:** {used} / {total} ({pct}%)"
+    context_used:          "**Kontekst:** ~{used} tokens"
+    tokens:                "**Livstids tokens fakturert:** {tokens} _(ikke din nåværende kontekststørrelse; bruk `/context`)_"
+    agent_running:         "**Agent kjører:** {state}"
+    state_yes:             "Ja ⚡"
+    state_no:              "Nei"
+    queued:                "**Køede oppfølginger:** {count}"
+    platforms:             "**Tilkoblede plattformer:** {platforms}"
+
+  stop:
+    stopped_pending:       "⚡ Stoppet. Agenten hadde ikke startet ennå — du kan fortsette denne sesjonen."
+    stopped:               "⚡ Stoppet. Du kan fortsette denne sesjonen."
+    no_active:             "Ingen aktiv oppgave å stoppe."
+
+  title:
+    db_unavailable:        "Sesjonsdatabasen er ikke tilgjengelig."
+    warn_prefix:           "⚠️ {error}"
+    empty_after_clean:     "⚠️ Tittelen er tom etter opprydding. Bruk utskrivbare tegn."
+    set_to:                "✏️ Sesjonstittel satt: **{title}**"
+    not_found:             "Sesjon ikke funnet i databasen."
+    current_with_title:    "📌 Sesjon: `{session_id}`\nTittel: **{title}**"
+    current_no_title:      "📌 Sesjon: `{session_id}`\nIngen tittel satt. Bruk: `/title Mitt Sesjonsnavn`"
+
+  topic:
+    not_telegram_dm:         "/topic-kommandoen er kun tilgjengelig i private Telegram-chatter."
+    no_session_db:           "Sesjonsdatabasen er ikke tilgjengelig."
+    unauthorized:            "Du har ikke tilgang til å bruke /topic på denne boten."
+    restore_needs_topic:     "For å gjenopprette en sesjon, opprett eller åpne først et Telegram-emne, og send deretter /topic <sesjons-id> inne i det emnet. For å opprette et nytt emne, åpne All Messages og send en hvilken som helst melding der."
+    topics_disabled:         "Telegram-emner er ikke aktivert for denne boten ennå.\n\nSlik aktiverer du dem:\n1. Åpne @BotFather.\n2. Velg boten din.\n3. Åpne Bot Settings → Threads Settings.\n4. Slå på Threaded Mode og sørg for at brukere får lov til å opprette nye tråder.\n\nSend deretter /topic igjen."
+    topics_user_disallowed:  "Telegram-emner er aktivert, men brukere har ikke lov til å opprette emner.\n\nÅpne @BotFather → velg boten din → Bot Settings → Threads Settings, og slå deretter av 'Disallow users to create new threads'.\n\nSend deretter /topic igjen."
+    enable_failed:           "Kunne ikke aktivere Telegram-emnemodus: {error}"
+    bound_status:            "Dette emnet er knyttet til:\nSesjon: {label}\nID: {session_id}\n\nBruk /new for å erstatte dette emnet med en ny sesjon.\nFor parallelt arbeid, åpne All Messages og send en melding der for å opprette et nytt emne."
+    thread_ready:            "Telegram-emner med flere sesjoner er aktivert.\n\nDette emnet brukes som en uavhengig Hermes-sesjon. Bruk /new for å erstatte dette emnets gjeldende sesjon. For parallelt arbeid, åpne All Messages og send en melding der for å opprette et annet emne."
+    untitled_session:        "Sesjon uten tittel"
+
+  undo:
+    nothing:               "Ingenting å angre."
+    removed:               "↩️ Angret {turns} trinn ({count} melding(er)).\nSikkerhetskopiert til: \"{preview}\"\nKopier/rediger teksten ovenfor og send den for å spørre på nytt herfra."
+    invalid_count:         "Ugyldig antall \"{arg}\" — bruk /undo eller /undo N."
+
+  update:
+    platform_not_messaging:  "✗ /update er kun tilgjengelig fra meldingsplattformer. Kjør `hermes update` fra terminalen."
+    not_git_repo:            "✗ Ikke et git-repositorium — kan ikke oppdatere."
+    hermes_cmd_not_found:    "✗ Kunne ikke finne `hermes`-kommandoen. Hermes kjører, men oppdateringskommandoen fant ikke den kjørbare filen på PATH eller via gjeldende Python-tolker. Prøv å kjøre `hermes update` manuelt i terminalen."
+    start_failed:            "✗ Kunne ikke starte oppdateringen: {error}"
+    starting:                "⚕ Starter Hermes-oppdateringen… Jeg strømmer fremdriften hit."
+
+  usage:
+    rate_limits:              "⏱️ **Frekvensgrenser:** {state}"
+    header_session:           "📊 **Tokembruk for sesjonen**"
+    label_model:              "Modell: `{model}`"
+    label_input_tokens:       "Inndatatokens: {count}"
+    label_cache_read:         "Cache-lesetokens: {count}"
+    label_cache_write:        "Cache-skrivetokens: {count}"
+    label_output_tokens:      "Utdatatokens: {count}"
+    label_total:              "Totalt: {count}"
+    label_api_calls:          "API-kall: {count}"
+    label_cost:               "Kostnad: {prefix}${amount}"
+    label_cost_included:      "Kostnad: inkludert"
+    label_context:            "Kontekst: {used} / {total} ({pct}%)"
+    label_compressions:       "Komprimeringer: {count}"
+    breakdown_header:         "🧩 **Kontekstfordeling** _(estimert)_"
+    breakdown_line:           "• {label}: ~{count} ({pct}%)"
+    breakdown_cat_system_prompt:        "Systemprompt"
+    breakdown_cat_tool_definitions:     "Verktøydefinisjoner"
+    breakdown_cat_rules:                "Regler"
+    breakdown_cat_skills:               "Ferdigheter"
+    breakdown_cat_mcp:                  "MCP"
+    breakdown_cat_subagent_definitions: "Underagentdefinisjoner"
+    breakdown_cat_memory:               "Minne"
+    breakdown_cat_conversation:         "Samtale"
+    header_session_info:      "📊 **Sesjonsinformasjon**"
+    label_messages:           "Meldinger: {count}"
+    label_estimated_context:  "Estimert kontekst: ~{count} tokens"
+    detailed_after_first:     "_(Detaljert bruk tilgjengelig etter første agentsvar)_"
+    no_data:                  "Ingen bruksdata tilgjengelig for denne sesjonen."
+    unknown_subcommand:       "Ukjent /usage-undersubkommando: `{args}`. Prøv `/usage` eller `/usage reset [--force]`."
+    reset_wrong_provider:     "Tilbakestilling av banket bruk er kun tilgjengelig på openai-codex-leverandøren. Bytt med `/model` først."
+
+  credits:
+    not_logged_in:            "Ikke logget inn på Nous Portal. Logg inn for å se kredittsaldoen din og fylle på."
+
+  verbose:
+    not_enabled:           "`/verbose`-kommandoen er ikke aktivert for meldingsplattformer.\n\nAktiver den i `config.yaml`:\n```yaml\ndisplay:\n  tool_progress_command: true\n```"
+    mode_off:              "⚙️ Verktøyfremdrift: **AV** — ingen verktøyaktivitet vises."
+    mode_new:              "⚙️ Verktøyfremdrift: **NY** — vises når et verktøy endrer seg (forhåndsvisningslengde: `display.tool_preview_length`, standard 40)."
+    mode_all:              "⚙️ Verktøyfremdrift: **ALLE** — hvert verktøykall vises (forhåndsvisningslengde: `display.tool_preview_length`, standard 40)."
+    mode_verbose:          "⚙️ Verktøyfremdrift: **VERBOSE** — hvert verktøykall med fullstendige argumenter."
+    mode_log:              "⚙️ Verktøyfremdrift: **LOG** — stille i chatten; verktøykall skrives til ~/.hermes/logs/tool_calls.log."
+    saved_suffix:          "_(lagret for **{platform}** — trer i kraft ved neste melding)_"
+    save_failed:           "_(kunne ikke lagre til konfigurasjonen: {error})_"
+
+  voice:
+    enabled_voice_only:    "Talemodus aktivert.\nJeg svarer med tale når du sender talemeldinger.\nBruk /voice tts for å få talesvar på alle meldinger."
+    disabled_text:         "Talemodus deaktivert. Bare tekstsvar."
+    tts_enabled:           "Auto-TTS aktivert.\nAlle svar inkluderer en talemelding."
+    status_mode:           "Talemodus: {label}"
+    status_channel:        "Talekanal: #{channel}"
+    status_participants:   "Deltakere: {count}"
+    status_member:         "  - {name}{status}"
+    speaking:              " (snakker)"
+    enabled_short:         "Talemodus aktivert."
+    disabled_short:        "Talemodus deaktivert."
+    label_off:             "Av (bare tekst)"
+    label_voice_only:      "På (talesvar på talemeldinger)"
+    label_all:             "TTS (talesvar på alle meldinger)"
+    help:                  "{toggle}\n\n**Slik fungerer /voice**\n• `/voice on` — talesvar når du sender en talemelding\n• `/voice tts` — talesvar på *hver* melding\n• `/voice off` — tilbake til bare tekstsvar\n• `/voice status` — vis nåværende modus\n• `/voice` (uten argument) — rask veksling mellom på og av{channels}"
+    help_channels:         "\n\n**Direkte talekanaler (Discord)**\n• Bli med i en talekanal først, deretter `/voice channel` — jeg blir med, lytter og snakker svarene mine\n• `/voice leave` — koble fra talekanalen"
+
+  yolo:
+    disabled:                   "⚠️ YOLO-modus **AV** for denne sesjonen — farlige kommandoer vil kreve godkjenning."
+    enabled:                    "⚡ YOLO-modus **PÅ** for denne sesjonen — alle kommandoer auto-godkjennes. Bruk med forsiktighet."
+
+  shared:
+    session_db_unavailable:      "Sesjonsdatabasen er ikke tilgjengelig."
+    session_db_unavailable_prefix: "Sesjonsdatabasen er ikke tilgjengelig"
+    session_not_found:           "Sesjon ikke funnet i databasen."
+    warn_passthrough:            "⚠️ {error}"
