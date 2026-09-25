@@ -47,10 +47,13 @@ if [ "$home_parent" != / ]; then
 fi
 home_mounts+=(--bind "$DEV_SANDBOX_ROOT/home" "$DEV_SANDBOX_HOME")
 
+# No npm_config_nodedir here: /usr/local inside the sandbox is the sandbox's
+# own (mostly empty) tree, not the host's node install, so pointing node-gyp
+# there makes every native-module build fail with
+# "gyp: /usr/local/common.gypi not found" (node-pty hit this on CI). With
+# nodedir unset, node-gyp fetches headers for the running node itself, which
+# works through the fake-internet proxy.
 node_env=()
-if [ -n "${DEV_SANDBOX_NODE_DIR:-}" ]; then
-  node_env+=(--setenv npm_config_nodedir "$DEV_SANDBOX_NODE_DIR")
-fi
 electron_env=()
 if [ -n "${DEV_SANDBOX_ELECTRON_LD_LIBRARY_PATH:-}" ]; then
   electron_env+=(
