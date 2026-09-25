@@ -112,6 +112,20 @@ collect_sandbox_logs() {
     cat "$dest/proxy.log" >&2
     echo "--- end proxy.log ---" >&2
   fi
+  # npm --silent hides even real errors; its own debug log is the only place
+  # the actual failure reason survives. Sandbox state lives under
+  # $SANDBOX_ROOT/home, which is about to be deleted unless --keep.
+  local npm_logs="$SANDBOX_ROOT/home/.npm/_logs"
+  if [ -d "$npm_logs" ]; then
+    cp -a "$npm_logs/." "$dest/npm-logs/" 2>/dev/null || true
+    local newest
+    newest="$(ls -t "$npm_logs" 2>/dev/null | head -1)" || newest=""
+    if [ -n "$newest" ]; then
+      echo "--- sandbox npm debug log ($newest) ---" >&2
+      cat "$npm_logs/$newest" >&2
+      echo "--- end npm debug log ---" >&2
+    fi
+  fi
 }
 
 # ── preflight ──────────────────────────────────────────────────────────────
