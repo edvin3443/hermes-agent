@@ -224,7 +224,12 @@ exec bwrap \
   --setenv HTTP_PROXY http://127.0.0.1:8080 \
   --setenv HTTPS_PROXY http://127.0.0.1:8080 \
   --setenv ALL_PROXY http://127.0.0.1:8080 \
-  --setenv NO_PROXY '' \
+  # Node 26's npm bundles an undici whose EnvHttpProxyAgent crashes with
+  # "AssertionError [ERR_ASSERTION]: assert(!this.paused)" when the fake-internet
+  # proxy closes connections (node-gyp's headers download hit it). npm only ever
+  # talks to the real registry and node-gyp to nodejs.org, and neither needs the
+  # fixtures the proxy serves, so let those two hosts bypass it entirely.
+  --setenv NO_PROXY 'nodejs.org,.nodejs.org,registry.npmjs.org,.npmjs.org' \
   --setenv DEV_SANDBOX_INTERACTIVE "$DEV_SANDBOX_INTERACTIVE" \
   --setenv ELECTRON_DISABLE_SANDBOX 1 \
   "${node_env[@]}" \
