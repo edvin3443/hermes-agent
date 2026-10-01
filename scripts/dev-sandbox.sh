@@ -232,17 +232,45 @@ if [ -n "$INSTALL_REF" ]; then
   # Peel to ^{commit} in both cases: an annotated tag fetches as a tag OBJECT,
   # and using it directly fails later with "trying to write non-commit object
   # ... to branch 'refs/heads/main'".
-  if git -C "$UPSTREAM_REPO" fetch -q "$UPSTREAM_URL" "$INSTALL_REF" 2>/dev/null; then
-    UPSTREAM_COMMIT="$(git -C "$UPSTREAM_REPO" rev-parse "FETCH_HEAD^{commit}")"
-  elif git -C "$UPSTREAM_REPO" fetch -q "$UPSTREAM_URL" refs/heads/main \
-    && UPSTREAM_COMMIT="$(git -C "$UPSTREAM_REPO" rev-parse --verify -q "$INSTALL_REF^{commit}")"; then
-    :
-  else
+  #
+  # The single-ref fetch pulls the tag's whole history from the live remote --
+  # a pack that runs to a gigabyte on this repo -- so a mid-transfer connection
+  # reset is a real possibility, not a resolution failure. Retry each attempt
+  # and keep the last stderr: stderr is what tells a network drop ("early
+  # EOF") apart from a genuinely unresolvable ref, and silencing it turned a
+  # dropped connection into a bare "could not resolve upstream ref".
+  UPSTREAM_FETCH_ERR="$(mktemp -t hermes-sandbox-upstream-err.XXXXXX)"
+  up_fetch_ok=false
+  for up_fetch_attempt in 1 2 3; do
+    if git -C "$UPSTREAM_REPO" fetch -q "$UPSTREAM_URL" "$INSTALL_REF" \
+      2>"$UPSTREAM_FETCH_ERR"; then
+      UPSTREAM_COMMIT="$(git -C "$UPSTREAM_REPO" rev-parse "FETCH_HEAD^{commit}")"
+      up_fetch_ok=true
+      break
+    fi
+    echo "[sandbox] upstream fetch attempt $up_fetch_attempt failed; retrying" >&2
+    sleep 5
+  done
+  if [ "$up_fetch_ok" = false ]; then
+    # Fall back to fetching main and resolving the ref locally: a SHA that is
+    # an ancestor of main is still installable even when the direct fetch
+    # keeps failing.
+    if git -C "$UPSTREAM_REPO" fetch -q "$UPSTREAM_URL" refs/heads/main \
+      2>>"$UPSTREAM_FETCH_ERR" \
+      && UPSTREAM_COMMIT="$(git -C "$UPSTREAM_REPO" rev-parse --verify -q "$INSTALL_REF^{commit}")"; then
+      up_fetch_ok=true
+    fi
+  fi
+  if [ "$up_fetch_ok" = false ]; then
     rm -rf -- "$UPSTREAM_REPO"
     echo "error: could not resolve upstream ref: $INSTALL_REF" >&2
     echo '       Use a branch (main), a tag (v2026.7.7), or a SHA reachable from main.' >&2
+    sed 's/^/       git: /' "$UPSTREAM_FETCH_ERR" >&2
+    rm -f -- "$UPSTREAM_FETCH_ERR"
     exit 1
   fi
+  rm -f -- "$UPSTREAM_FETCH_ERR"
+  unset up_fetch_ok up_fetch_attempt
 fi
 if [ ! -e "$SANDBOX_ROOT/root/repo/.sandbox-source" ]; then
   mkdir -p "$SANDBOX_ROOT/root/repo"
